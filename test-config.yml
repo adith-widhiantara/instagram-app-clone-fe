@@ -1,0 +1,10 @@
+# Sonar Coverage
+cache:
+  paths:
+    - /node_modules
+test:
+  image: node:20-slim
+  before_script:
+    - yarn install
+  script:
+    - yarn test:coverage
