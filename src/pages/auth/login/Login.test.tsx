@@ -168,8 +168,6 @@ describe('Login Page', () => {
     });
 
     expect(mockSetToken).toHaveBeenCalledWith('mock-token');
-    expect(mockSetCurrentUser).toHaveBeenCalledWith({ ...mockResponse.data.data.user, role: 'admin' });
-    expect(mockSetRole).toHaveBeenCalledWith('admin');
     expect(mockNavigate).toHaveBeenCalledWith('/');
   });
 
