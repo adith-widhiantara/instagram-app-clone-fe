@@ -41,6 +41,9 @@ interface PostInterface {
     image_url: string
     likes: any[],
     comments: any[],
+    user: {
+      name: string
+    }
   };
 }
 

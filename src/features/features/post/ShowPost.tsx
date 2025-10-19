@@ -20,6 +20,7 @@ export default function ShowPost() {
           caption={data.caption}
           image_url={data.image_url}
           data={data}
+          author={data.user.name}
           is_detail={true}
         />
       )}

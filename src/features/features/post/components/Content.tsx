@@ -311,6 +311,9 @@ export default function Content(props: ContentProps) {
                   <div key={comment.id} style={styles.commentItem}>
 
                     {/* Isi Komentar */}
+                    <p style={styles.commentAuthor}>
+                      {comment.user.name}:
+                    </p>
                     <p style={styles.commentBody}>
                       {comment.content}
                     </p>

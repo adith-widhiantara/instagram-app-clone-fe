@@ -3,6 +3,7 @@ import { useAddFollowUser } from '@/api/people';
 interface CardPeopleProps {
   id: number;
   name: string;
+  is_followed: boolean;
 }
 
 export default function CardPeople(props: CardPeopleProps) {
@@ -52,17 +53,26 @@ export default function CardPeople(props: CardPeopleProps) {
         </h5>
 
         <div className="flex mt-4 md:mt-6">
-          <button
-            type={'button'}
-            className={'inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'}
-            onClick={() => {
-              mutateAddFollowUser({
-                user_id: props.id,
-              });
-            }}
-          >
-            Add friend
-          </button>
+          {!props.is_followed && (
+            <button
+              type={'button'}
+              className={'inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'}
+              onClick={() => {
+                mutateAddFollowUser({
+                  user_id: props.id,
+                });
+              }}
+            >
+              Add friend
+            </button>
+          ) || (
+            <button
+              type={'button'}
+              className={'inline-flex items-center px-4 py-2 text-sm font-medium text-center text-white bg-gray-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800'}
+            >
+              Followed!
+            </button>
+          )}
         </div>
       </div>
     </div>

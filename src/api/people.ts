@@ -10,6 +10,9 @@ interface UsersInterface {
     content: {
       id: number
       name: string
+      followers: {
+        id: number
+      }[]
     }[]
   };
 }
