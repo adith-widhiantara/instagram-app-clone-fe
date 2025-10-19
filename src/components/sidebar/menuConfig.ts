@@ -26,4 +26,9 @@ export const menuConfig: AppMenuConfig[] = [
       },
     ],
   },
+
+  {
+    href: '/people',
+    label: 'People',
+  },
 ];

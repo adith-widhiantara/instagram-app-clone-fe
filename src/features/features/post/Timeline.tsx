@@ -13,6 +13,8 @@ export default function Timeline() {
           id={post.id}
           caption={post.caption}
           image_url={post.image_url}
+          author={post.user.name}
+          is_detail={false}
         />
       ))}
     </>

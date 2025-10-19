@@ -26,7 +26,10 @@ interface PostsInterface {
     content: {
       id: number
       caption: string,
-      image_url: string
+      image_url: string,
+      user: {
+        name: string
+      }
     }[]
   };
 }

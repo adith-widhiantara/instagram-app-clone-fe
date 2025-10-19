@@ -8,6 +8,7 @@ interface ContentProps {
   id: number,
   caption: string,
   image_url: string,
+  author: string,
   is_detail?: boolean
   data?: any
 }
@@ -155,7 +156,7 @@ const styles = {
 export default function Content(props: ContentProps) {
   const navigate = useNavigate();
 
-  const initialLikes = props.data.likes.length;
+  const initialLikes = props.data?.likes?.length ?? 0;
   const [likeCount, setLikeCount] = useState<number>(initialLikes);
   const [isLiked, setIsLiked] = useState<boolean>(false);
   const [newCommentText, setNewCommentText] = useState('');
@@ -214,7 +215,7 @@ export default function Content(props: ContentProps) {
   };
 
   useEffect(() => {
-    setIsLiked(props.data.likes.map((like: any) => {
+    setIsLiked(props.data?.likes?.map((like: any) => {
       return like.user_id;
     }).includes(currentUser?.id));
   }, [currentUser]);
@@ -230,8 +231,9 @@ export default function Content(props: ContentProps) {
           <h5 className="mb-2 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
             {props.caption}
           </h5>
-          <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">Here are the biggest enterprise technology
-            acquisitions of 2021 so far, in reverse chronological order.</p>
+          <p className="mb-3 font-normal text-gray-700 dark:text-gray-400">
+            {props.author}
+          </p>
 
           {!props.is_detail && (
             <button onClick={() => navigate(`${props.id}`)}

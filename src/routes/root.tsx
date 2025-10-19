@@ -7,6 +7,7 @@ import { ProtectedRoute } from '@/components/gate/ProtectedRoute';
 import { AdminLayout } from '@/layouts/AdminLayout';
 import { RouteObject } from 'react-router-dom';
 import postRoutes from '@/routes/post.routes';
+import peopleRoutes from '@/routes/people.routes';
 
 // pages
 
@@ -21,6 +22,10 @@ const router: RouteObject[] = [
       {
         path: 'post',
         children: [...postRoutes],
+      },
+      {
+        path: 'people',
+        children: [...peopleRoutes],
       },
     ],
   },
