@@ -11,6 +11,16 @@ type AddLikePayload = {
   post_id: number
 }
 
+type AddCommentPayload = {
+  user_id: number
+  post_id: number
+  content: string
+}
+
+type RemoveCommentPayload = {
+  id: number
+}
+
 interface PostsInterface {
   data: {
     content: {
@@ -92,7 +102,7 @@ async function addLike(data: AddLikePayload) {
   try {
     return await axiosInstance.postForm('/api/like', data);
   } catch (error) {
-    console.error('add post error:', error);
+    console.error('add like error:', error);
     return Promise.reject<Error>(error);
   }
 }
@@ -111,4 +121,54 @@ function useAddLike() {
   });
 }
 
-export { useAddPost, usePosts, useShowPost, useAddLike };
+// comment
+
+async function addComment(data: AddCommentPayload) {
+  try {
+    return await axiosInstance.postForm('/api/comment', data);
+  } catch (error) {
+    console.error('add comment error:', error);
+    return Promise.reject<Error>(error);
+  }
+}
+
+function useAddComment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: addComment,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['comment'] });
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      console.error('add comment error:', error);
+    },
+  });
+}
+
+// delete comment
+
+async function removeComment(data: RemoveCommentPayload) {
+  try {
+    return await axiosInstance.delete(`/api/comment/${data.id}`);
+  } catch (error) {
+    console.error('remove comment error:', error);
+    return Promise.reject<Error>(error);
+  }
+}
+
+function useRemoveComment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: removeComment,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['comment'] });
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      console.error('remove comment error:', error);
+    },
+  });
+}
+
+export { useAddPost, usePosts, useShowPost, useAddLike, useAddComment, useRemoveComment };

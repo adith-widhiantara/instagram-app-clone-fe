@@ -1,8 +1,8 @@
 import { useNavigate } from 'react-router-dom';
-import { FaComment, FaHeart, FaUserCircle } from 'react-icons/fa';
+import { FaComment, FaHeart, FaPaperPlane, FaTrash, FaUserCircle } from 'react-icons/fa';
 import { useEffect, useState } from 'react';
 import { useAuthStore } from '@/stores/auth.store';
-import { useAddLike } from '@/api/post';
+import { useAddComment, useAddLike, useRemoveComment } from '@/api/post';
 
 interface ContentProps {
   id: number,
@@ -78,6 +78,78 @@ const styles = {
     fontWeight: 'bold',
     color: 'inherit', // Mengikuti warna tombol (merah/putih)
   },
+
+  // --- STYLE BARU UNTUK KOMENTAR ---
+  commentsSection: {
+    marginTop: '15px',
+  },
+  commentsTitle: {
+    fontSize: '16px',
+    borderBottom: '1px solid #eee',
+    paddingBottom: '5px',
+    marginBottom: '10px',
+    color: '#333',
+    margin: '0 0 10px 0',
+  },
+  commentItem: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '8px 0',
+    borderBottom: '1px dotted #eee',
+  },
+  commentAuthor: {
+    fontWeight: 'bold',
+    fontSize: '13px',
+    margin: '0 5px 0 0',
+    color: '#555',
+    flexShrink: 0, // Agar nama penulis tidak menyusut
+  },
+  commentBody: {
+    fontSize: '13px',
+    margin: 0,
+    flexGrow: 1, // Agar isi komentar mengisi ruang
+  },
+  deleteButton: {
+    backgroundColor: 'transparent',
+    border: 'none',
+    cursor: 'pointer',
+    marginLeft: '10px',
+    padding: '0 5px',
+    outline: 'none',
+    flexShrink: 0, // Agar tombol tidak menyusut
+  },
+  // --- STYLE BARU UNTUK INPUT DAN SUBMIT ---
+  newCommentForm: {
+    display: 'flex',
+    alignItems: 'center',
+    padding: '10px 0',
+  },
+  commentInput: {
+    flexGrow: 1, // Memungkinkan input mengisi ruang
+    padding: '10px',
+    marginRight: '10px',
+    borderRadius: '20px',
+    border: '1px solid #ccc',
+    fontSize: '14px',
+    outline: 'none',
+  },
+  submitButton: {
+    backgroundColor: '#3498db', // Warna biru cerah
+    color: 'white',
+    border: 'none',
+    borderRadius: '50%', // Bentuk bulat
+    width: '38px',
+    height: '38px',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    cursor: 'pointer',
+    transition: 'background-color 0.2s',
+  },
+  submitButtonHover: {
+    // Anda bisa tambahkan ini untuk efek hover jika menggunakan CSS Modules atau state
+    // 'backgroundColor': '#2980b9'
+  },
 };
 
 export default function Content(props: ContentProps) {
@@ -86,12 +158,19 @@ export default function Content(props: ContentProps) {
   const initialLikes = props.data.likes.length;
   const [likeCount, setLikeCount] = useState<number>(initialLikes);
   const [isLiked, setIsLiked] = useState<boolean>(false);
+  const [newCommentText, setNewCommentText] = useState('');
   const { currentUser } = useAuthStore();
 
   // hooks
   const {
     mutate: mutateLike,
   } = useAddLike();
+  const {
+    mutate: mutateComment,
+  } = useAddComment();
+  const {
+    mutate: mutateRemoveComment,
+  } = useRemoveComment();
 
   const handleLike = () => {
     // Logika Like/Unlike
@@ -111,6 +190,27 @@ export default function Content(props: ContentProps) {
       post_id: props.data.id,
       user_id: currentUser?.id || 0,
     });
+  };
+
+  const handleDeleteComment = (commentId: number) => {
+    mutateRemoveComment({
+      id: commentId,
+    });
+  };
+
+  // FUNGSI UNTUK SUBMIT KOMENTAR BARU
+  const handleCommentSubmit = () => {
+    if (newCommentText.trim() === '') {
+      alert('Komentar tidak boleh kosong!');
+      return;
+    }
+    mutateComment({
+      post_id: props.data.id,
+      user_id: currentUser?.id || 0,
+      content: newCommentText,
+    });
+
+    setNewCommentText('');
   };
 
   useEffect(() => {
@@ -151,7 +251,7 @@ export default function Content(props: ContentProps) {
               {/* Bagian Nama User */}
               <div style={styles.userSection}>
                 <FaUserCircle size={20} style={styles.icon} />
-                <p style={styles.text}>Posted By: **{props.data.user.name}**</p>
+                <p style={styles.text}>Posted By: {props.data.user.name}</p>
               </div>
 
               <div style={styles.divider}></div>
@@ -177,9 +277,56 @@ export default function Content(props: ContentProps) {
                 {/* Jumlah Comment (tetap statis dari props) */}
                 <div style={styles.statItem}>
                   <FaComment color="#3498db" size={18} style={styles.icon} />
-                  <p style={styles.text}>**{props.data.comments.length}** Comments</p>
+                  <p style={styles.text}>{props.data.comments.length} Comments</p>
                 </div>
+              </div>
 
+              <div style={styles.divider}></div>
+
+              <div style={styles.newCommentForm}>
+                <input
+                  type="text"
+                  value={newCommentText}
+                  onChange={(e) => setNewCommentText(e.target.value)}
+                  placeholder="Tulis komentar Anda..."
+                  style={styles.commentInput}
+                />
+                <button
+                  onClick={handleCommentSubmit}
+                  style={styles.submitButton}
+                >
+                  <FaPaperPlane size={16} />
+                </button>
+              </div>
+
+              <div style={styles.divider}></div>
+
+              <div style={styles.commentsSection}>
+                <h4 style={styles.commentsTitle}>Komentar ({props.data.comments.length})</h4>
+
+                {/* Mapping setiap komentar dari props */}
+                {props.data.comments.map((comment: any) => (
+                  <div key={comment.id} style={styles.commentItem}>
+
+                    {/* Isi Komentar */}
+                    <p style={styles.commentBody}>
+                      {comment.content}
+                    </p>
+
+                    {/* Tombol Hapus */}
+                    <button
+                      onClick={() => handleDeleteComment(comment.id)}
+                      style={styles.deleteButton}
+                      title="Hapus Komentar"
+                    >
+                      <FaTrash size={14} color="#e74c3c" />
+                    </button>
+                  </div>
+                ))}
+
+                {props.data.comments.length === 0 && (
+                  <p style={{ fontSize: '12px', color: '#777' }}>Belum ada komentar.</p>
+                )}
               </div>
             </div>
           )}
