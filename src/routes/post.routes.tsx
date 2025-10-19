@@ -1,6 +1,7 @@
 import { RouteObject } from 'react-router-dom';
 import CreatePost from '@/pages/post/CreatePost';
 import ListPost from '@/pages/post/ListPost';
+import DetailPost from '@/pages/post/DetailPost';
 
 const postRoutes: RouteObject[] = [
   {
@@ -10,6 +11,10 @@ const postRoutes: RouteObject[] = [
   {
     path: 'add',
     element: <CreatePost />,
+  },
+  {
+    path: ':id',
+    element: <DetailPost />,
   },
 ];
 

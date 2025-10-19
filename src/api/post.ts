@@ -1,5 +1,5 @@
 import { axiosInstance } from '@/utils/lib/axios';
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { QueryFunctionContext, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 type AddPostPayload = {
   image: File,
@@ -55,4 +55,30 @@ function usePosts() {
   });
 }
 
-export { useAddPost, usePosts };
+interface PostInterface {
+  data: {
+    id: number
+    caption: string,
+    image_url: string
+    likes: any[],
+    comments: any[],
+  };
+}
+
+async function getPost(queryFunctionContext: QueryFunctionContext) {
+  const { queryKey } = queryFunctionContext;
+  const [_, paramsDataConfig] = queryKey;
+  const { id } = paramsDataConfig as { id: number };
+
+  const response = await axiosInstance.get<PostInterface>(`/api/post/${id}`);
+  return response.data.data;
+}
+
+function useShowPost(params: { id: number }) {
+  return useQuery({
+    queryKey: ['post', { id: params.id }],
+    queryFn: getPost,
+  });
+}
+
+export { useAddPost, usePosts, useShowPost };
