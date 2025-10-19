@@ -6,6 +6,7 @@ import Home from '@/pages/home/Home';
 import { ProtectedRoute } from '@/components/gate/ProtectedRoute';
 import { AdminLayout } from '@/layouts/AdminLayout';
 import { RouteObject } from 'react-router-dom';
+import postRoutes from '@/routes/post.routes';
 
 // pages
 
@@ -17,6 +18,10 @@ const router: RouteObject[] = [
     errorElement: <ServerError />,
     children: [
       { index: true, element: <Home /> },
+      {
+        path: 'post',
+        children: [...postRoutes],
+      },
     ],
   },
   {

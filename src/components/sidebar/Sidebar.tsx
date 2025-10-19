@@ -1,7 +1,7 @@
 import { Dispatch, FC, SetStateAction } from 'react';
 import { MenuConfig, Sidebar } from 'alurkerja-ui';
 import { useLocation } from 'react-router-dom';
-import { useVisibleMenu } from '@/utils/hooks/useVisibleMenu';
+import { menuConfig } from '@/components/sidebar/menuConfig';
 
 interface MenuWrapperProps {
   children: JSX.Element;
@@ -16,15 +16,13 @@ interface ExtendedSidebarProps {
 
 export const ExtendedSidebar: FC<ExtendedSidebarProps> = ({ setToggled, toggled, menuWrapper }) => {
   const { pathname } = useLocation();
-  const menus = useVisibleMenu();
-
   return (
     <div className="fixed">
       <Sidebar
         logo={<span className="font-bold text-white">Instagram Clone</span>}
         toggled={toggled}
         setToggled={setToggled}
-        menuConfig={menus}
+        menuConfig={menuConfig}
         currentPathName={pathname}
         menuWrapper={menuWrapper}
       />
