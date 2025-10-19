@@ -1,5 +1,5 @@
 import { axiosInstance } from '@/utils/lib/axios';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 type AddPostPayload = {
   image: File,
@@ -29,4 +29,30 @@ function useAddPost() {
   });
 }
 
-export { useAddPost };
+interface PostsInterface {
+  data: {
+    content: {
+      id: number
+      caption: string,
+      image_url: string
+    }[]
+  };
+}
+
+async function getPosts() {
+  const response = await axiosInstance.get<PostsInterface>(`/api/post`);
+  return response.data.data;
+}
+
+function usePosts() {
+  return useQuery({
+    queryKey: ['posts'],
+    queryFn: getPosts,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      console.error('Get posts error:', error);
+    },
+  });
+}
+
+export { useAddPost, usePosts };
