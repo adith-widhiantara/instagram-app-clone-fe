@@ -6,6 +6,31 @@ type AddPostPayload = {
   caption: string
 };
 
+type AddLikePayload = {
+  user_id: number
+  post_id: number
+}
+
+interface PostsInterface {
+  data: {
+    content: {
+      id: number
+      caption: string,
+      image_url: string
+    }[]
+  };
+}
+
+interface PostInterface {
+  data: {
+    id: number
+    caption: string,
+    image_url: string
+    likes: any[],
+    comments: any[],
+  };
+}
+
 async function addPost(data: AddPostPayload) {
   try {
     return await axiosInstance.postForm('/api/post', data);
@@ -29,16 +54,6 @@ function useAddPost() {
   });
 }
 
-interface PostsInterface {
-  data: {
-    content: {
-      id: number
-      caption: string,
-      image_url: string
-    }[]
-  };
-}
-
 async function getPosts() {
   const response = await axiosInstance.get<PostsInterface>(`/api/post`);
   return response.data.data;
@@ -53,16 +68,6 @@ function usePosts() {
       console.error('Get posts error:', error);
     },
   });
-}
-
-interface PostInterface {
-  data: {
-    id: number
-    caption: string,
-    image_url: string
-    likes: any[],
-    comments: any[],
-  };
 }
 
 async function getPost(queryFunctionContext: QueryFunctionContext) {
@@ -81,4 +86,29 @@ function useShowPost(params: { id: number }) {
   });
 }
 
-export { useAddPost, usePosts, useShowPost };
+// like
+
+async function addLike(data: AddLikePayload) {
+  try {
+    return await axiosInstance.postForm('/api/like', data);
+  } catch (error) {
+    console.error('add post error:', error);
+    return Promise.reject<Error>(error);
+  }
+}
+
+function useAddLike() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: addLike,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['like'] });
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      console.error('add like error:', error);
+    },
+  });
+}
+
+export { useAddPost, usePosts, useShowPost, useAddLike };
