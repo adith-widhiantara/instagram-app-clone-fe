@@ -58,4 +58,29 @@ function useAddFollowUser() {
   });
 }
 
-export { useUsers, useAddFollowUser };
+// unfollow-user
+
+async function addUnfollowUser(data: AddFollowPayload) {
+  try {
+    return await axiosInstance.postForm('/api/follow/unfollow-user', data);
+  } catch (error) {
+    console.error('add unfollow error:', error);
+    return Promise.reject<Error>(error);
+  }
+}
+
+function useAddUnfollowUser() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: addUnfollowUser,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['unfollow-user'] });
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    onError: (error: any) => {
+      console.error('add unfollow-user error:', error);
+    },
+  });
+}
+
+export { useUsers, useAddFollowUser, useAddUnfollowUser };

@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 
 async function getProfile() {
   try {
-    const response = await axiosInstance.get(import.meta.env.VITE_API_URL + '/api/profile', {
+    const response = await axiosInstance.get(import.meta.env.VITE_API_URL + '/api/profile/my-profile', {
       headers: {
         'Content-Type': 'application/json',
       },

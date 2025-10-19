@@ -9,37 +9,45 @@ import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { useNavigate } from 'react-router-dom';
 import z from 'zod';
+import UserListCard from '@/features/features/people/components/UserListCard';
+import { useAddUnfollowUser } from '@/api/people';
 
 const formSchema = z.object({
   email: z.string().min(1, 'Email is required').email('Invalid email address'),
   name: z.string().min(1, 'Name is required'),
-  client: z.string().min(1, 'Client is required'),
-  status: z.string(),
 });
 
 type ProfileFormValues = z.infer<typeof formSchema>;
 
 const ProfileShow = () => {
-  const { data, isLoading } = useGetProfile();
+  const { data } = useGetProfile();
   const navigate = useNavigate();
+
+  const {
+    mutate,
+  } = useAddUnfollowUser();
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       email: '',
       name: '',
-      client: '',
-      status: '',
     },
   });
+
+  const handleUserAction = (userId: any, actionType: any) => {
+    if (actionType === 'unfollow') {
+      mutate({
+        user_id: userId,
+      });
+    }
+  };
 
   useEffect(() => {
     if (data) {
       form.reset({
-        email: data.data.email ?? '',
-        name: data.data.full_name ?? '',
-        client: data.data.master_client?.client_name ?? '',
-        status: data.data.status ? 'Active' : 'Inactive',
+        email: data.data.user.email ?? '',
+        name: data.data.user.name ?? '',
       });
     }
   }, [data, form]);
@@ -52,8 +60,6 @@ const ProfileShow = () => {
           <VerticalGaps className="gap-y-3">
             <FieldInput label="Name" name="name" type="text" isDisabled />
             <FieldInput label="Email" name="email" type="text" isDisabled />
-            <FieldInput label="Client" name="client" type="text" isDisabled />
-            <FieldInput label="Status" name="status" type="text" isDisabled />
           </VerticalGaps>
 
           <div className="flex flex-row items-center justify-between">
@@ -62,14 +68,29 @@ const ProfileShow = () => {
                 Back
               </Button>
             </div>
-            <div>
-              <Button isBlock={false} loading={isLoading} onClick={() => navigate('edit')}>
-                Edit Profile
-              </Button>
-            </div>
           </div>
         </FormContainer>
       </VerticalGaps>
+
+      {data && (
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '40px', padding: '50px' }}>
+          {/* Card Followers */}
+          <UserListCard
+            title="Followers Anda"
+            users={data.data.user.followers}
+            type="followers"
+            onAction={handleUserAction}
+          />
+
+          {/* Card Following */}
+          <UserListCard
+            title="Mengikuti"
+            users={data.data.user.following}
+            type="following"
+            onAction={handleUserAction}
+          />
+        </div>
+      )}
     </section>
   );
 };

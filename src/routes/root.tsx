@@ -8,6 +8,7 @@ import { AdminLayout } from '@/layouts/AdminLayout';
 import { RouteObject } from 'react-router-dom';
 import postRoutes from '@/routes/post.routes';
 import peopleRoutes from '@/routes/people.routes';
+import ProfileShow from '@/pages/admin/profile/ProfileShow';
 
 // pages
 
@@ -26,6 +27,10 @@ const router: RouteObject[] = [
       {
         path: 'people',
         children: [...peopleRoutes],
+      },
+      {
+        path: 'admin/profile',
+        element: <ProfileShow />,
       },
     ],
   },
